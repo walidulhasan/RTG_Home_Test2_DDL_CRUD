@@ -1,0 +1,1 @@
+<ima class="rounded-circle" lt="Cinque Terre" src="~/Images/images.png"></ima>

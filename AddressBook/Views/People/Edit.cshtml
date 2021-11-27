@@ -1,0 +1,145 @@
+﻿@model AddressBook.Models.View_Model.PersonVM
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<div class="row">
+    <div class="col-sm-12 col-md-12">
+        <div class="card card-dark">
+            <div class="card-header m-0 p-1 bg-dark">
+                <h5 class="card-title m-0 text-white">Address Book</h5>
+                <div class="text-right"><a asp-action="Index" asp-controller="People" class="btn btn-xs btn-warning p-0" id="btnBlankAppliation">Back To List</a></div>
+            </div>
+            <form asp-action="Edit" class="my-2 mx-2" enctype="multipart/form-data" method="post">
+                <div class="row form-group">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="personId" />
+                    <div class="col-md-7">
+                        <label asp-for="personName"></label>
+                        <input asp-for="personName" class="form-control" id="inputAddress" placeholder="Your Name Please">
+                        <span asp-validation-for="personName" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label>Picture</label>
+
+                        <input asp-for="PicturPath" class="form-control-file" id="Imageone">
+                        <span asp-validation-for="PicturPath" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-3">
+                        <img src="~/Images/pp.png" id="imagePreview" class="rounded-circle" width="100" height="80" />
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-7">
+                        <label asp-for="personPhone" class="control-label"></label>
+                        <input asp-for="personPhone" class="form-control">
+                        <span asp-validation-for="personPhone" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-5">
+                        <label asp-for="dob" class="control-label"></label>
+                        <input asp-for="dob" type="date" class="form-control">
+                        <span asp-validation-for="dob" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label asp-for="countryId" class="control-label"></label>
+                        <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#exampleModalCenter">
+                            <i class="fas fa-plus-circle"></i>
+                        </button>
+                        <select asp-for="countryId" class="form-control" asp-items="ViewBag.countryId"></select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label asp-for="divisionId" class="control-label"></label>
+                        <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#exampleModalCenter">
+                            <i class="fas fa-plus-circle"></i>
+                        </button>
+                        <select asp-for="divisionId" class="form-control" asp-items="ViewBag.divisionId"></select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label asp-for="districtId" class="control-label"></label>
+                        <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#exampleModalCenter">
+                            <i class="fas fa-plus-circle"></i>
+                        </button>
+                        <select asp-for="districtId" class="form-control" asp-items="ViewBag.districtId"></select>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label asp-for="village" class="control-label"></label>
+                    <input asp-for="village" class="form-control" />
+                    <span asp-validation-for="village" class="text-danger"></span>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-12 text-center">
+                        <div class="form-group">
+                            <input type="submit" value="Create" class="btn btn-sm btn-success" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@*<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="personId" />
+            <div class="form-group">
+                <label asp-for="personName" class="control-label"></label>
+                <input asp-for="personName" class="form-control" />
+                <span asp-validation-for="personName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="personPhone" class="control-label"></label>
+                <input asp-for="personPhone" class="form-control" />
+                <span asp-validation-for="personPhone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="personPicture" class="control-label"></label>
+                <input asp-for="personPicture" class="form-control" />
+                <span asp-validation-for="personPicture" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="dob" class="control-label"></label>
+                <input asp-for="dob" class="form-control" />
+                <span asp-validation-for="dob" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="village" class="control-label"></label>
+                <input asp-for="village" class="form-control" />
+                <span asp-validation-for="village" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="countryId" class="control-label"></label>
+                <select asp-for="countryId" class="form-control" asp-items="ViewBag.countryId"></select>
+                <span asp-validation-for="countryId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="divisionId" class="control-label"></label>
+                <select asp-for="divisionId" class="form-control" asp-items="ViewBag.divisionId"></select>
+                <span asp-validation-for="divisionId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="districtId" class="control-label"></label>
+                <select asp-for="districtId" class="form-control" asp-items="ViewBag.districtId"></select>
+                <span asp-validation-for="districtId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>*@
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,130 @@
+﻿@model IEnumerable<AddressBook.Models.Person>
+@section style{
+    <link href="~/lib/sweetalert/sweetalert.css" rel="stylesheet" />
+}
+
+@{
+    ViewData["Title"] = "Index";
+    var sl = 1;
+    var color = "";
+}
+<div class="row">
+    <div class="col-sm-12 col-md-12">
+        <div class="card card-dark">
+            <div class="card-header m-0 p-1 bg-dark">
+                <h5 class="card-title m-0 text-white text-center">Address Book</h5>
+                <div class="text-right"><a asp-action="Create" class="btn btn-warning btn-sm"><b>Create</b></a></div>
+            </div>
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">SL#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Picture</th>
+                        <th scope="col">Phone No</th>
+                        <th scope="col">Age</th>
+                        <th scope="col">Country</th>
+                        <th scope="col">Division</th>
+                        <th scope="col">District</th>
+                        <th scope="col">Village</th>
+                        <th scope="col" class="text-center">Action</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <th scope="row">@(sl++)</th>
+                            <td>@item.personName</td>
+                            <td>
+                                @if (item.personPicture == null)
+                                {
+                                    <img src="~/Images/pp.png" class="rounded-circle" width="35" height="35" />
+                                }
+                                else
+                                {
+                                    <img src="~/Images/@item.personPicture" class="rounded-circle" width="35" height="35" />
+                                }
+
+
+                            </td>
+
+                            <td>@item.personPhone</td>
+
+                            @{
+                                var age = DateTime.Now.Year - item.dob.Year;
+                                if (age > 0 && age <= 20)
+                                {
+                                    color = "bg-danger text-white";
+                                }
+                                else if (age > 20 && age <= 60)
+                                {
+                                    color = "bg-primary text-white";
+                                }
+                                else if (age>60)
+                                {
+                                    color = "bg-secondary text-white";
+                                }
+                                <td class="@color">@age</td>
+                            }
+
+                            <td>@item.country.countryName</td>
+                            <td>@item.division.divisionName</td>
+                            <td>@item.district.districtName</td>
+                            <td>@item.village</td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.personId" class="btn btn-secondary btn-sm text-white font-weight-bold"><i class="fas fa-pen-square fa-lg"></i></a>
+                                <a asp-action="Delete" asp-route-id="@item.personId" class="btnDelete btn btn-danger btn-sm text-white font-weight-bold"><i class="fas fa-trash"></i></a>
+                            </td>
+                        </tr>
+                    }
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/lib/sweetalert/sweetalert.min.js"></script>
+    <script type="text/javascript">
+        $('.btnDelete').on('click', function (event) {
+            event.preventDefault();
+            const url = $(this).attr('href');
+            const id = this.id;
+            swal({
+                title: 'Are you sure?',
+                text: 'You will not be able to recover this record after deletion!',
+                icon: 'warning',
+                buttons: ["Cancel", "Yes!"],
+            }).then(function (value) {
+                if (value) {
+                    swal({
+                        title: 'Please wait',
+                        text: 'This item is being deleted!',
+                        icon: 'info',
+                        buttons: false,
+                    });
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        dataType: 'html'
+                    }).done(function (data) {
+                        setTimeout(function () {
+                            swal("Deleted!", "The record has been deleted.", "success").then(function () {
+                                $("#div-" + id + "").remove();
+                                window.location.reload();
+                            });
+                        }, 100);
+                    }).fail(function () {
+                        swal("Deleted_Error", "Error while deleting. :(", "error");
+                    });
+                }
+            });
+        });
+    </script>
+}
