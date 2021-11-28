@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\walid\\Downloads\\AddressBook\\AddressBook\\AddressBook.csproj": {}
+    "D:\\Office_Work\\HomeTest\\2\\AddressBook\\AddressBook\\AddressBook.csproj": {}
   },
   "projects": {
-    "C:\\Users\\walid\\Downloads\\AddressBook\\AddressBook\\AddressBook.csproj": {
+    "D:\\Office_Work\\HomeTest\\2\\AddressBook\\AddressBook\\AddressBook.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\walid\\Downloads\\AddressBook\\AddressBook\\AddressBook.csproj",
+        "projectUniqueName": "D:\\Office_Work\\HomeTest\\2\\AddressBook\\AddressBook\\AddressBook.csproj",
         "projectName": "AddressBook",
-        "projectPath": "C:\\Users\\walid\\Downloads\\AddressBook\\AddressBook\\AddressBook.csproj",
+        "projectPath": "D:\\Office_Work\\HomeTest\\2\\AddressBook\\AddressBook\\AddressBook.csproj",
         "packagesPath": "C:\\Users\\walid\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\walid\\Downloads\\AddressBook\\AddressBook\\obj\\",
+        "outputPath": "D:\\Office_Work\\HomeTest\\2\\AddressBook\\AddressBook\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\walid\\AppData\\Roaming\\NuGet\\NuGet.Config",
