@@ -38,6 +38,8 @@ namespace AddressBook.Controllers
             return View(await addressBookDbContext.ToListAsync());
             
         }
+        //Searching
+       
 
         // GET: People/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -59,6 +61,16 @@ namespace AddressBook.Controllers
 
             return View(person);
         }
+
+        #region For Ajax Form
+
+        public IActionResult ajaxDataSave()
+        {
+            ViewBag.Countries = new SelectList(_context.countries, "countryId", "countryName");
+            return View();
+        }
+
+        #endregion
 
         // GET: People/Create
         public IActionResult Create()
@@ -91,6 +103,7 @@ namespace AddressBook.Controllers
         {
             var division = _context.divisions.Where(x => x.CountryId == id).ToList();
             return Json(new SelectList(division,"divisionId", "divisionName"));
+
             //var DisList = _context.divisions.Where(d => d.divisionId == id).OrderBy(d => d.divisionName);
             //return Json(DisList.ToList());
         }
@@ -132,33 +145,47 @@ namespace AddressBook.Controllers
             string msg = "";
             if (ModelState.IsValid)
             {
+                var foundPhoneNumber = await _context.persons.FirstOrDefaultAsync(x => x.personPhone.Equals(personVM.personPhone));
 
-                Person c = new Person();
-                c.personName = personVM.personName;
-                c.personPhone = personVM.personPhone;
-                c.dob = personVM.dob;
-                c.village = personVM.village;
-                c.countryId = personVM.countryId;
-                c.divisionId = personVM.divisionId;
-                c.districtId = personVM.districtId;
-
-                //Image
-                string webroot = _he.WebRootPath;
-                string folder = "Images";
-                string imageFileName = Guid.NewGuid() + "_" + Path.GetFileName(personVM.PicturPath.FileName);
-                string fileToWrite = Path.Combine(webroot, folder, imageFileName);
-
-                c.personPicture = imageFileName;
-                c.countryId = personVM.countryId;
-
-
-                using (var stream = new FileStream(fileToWrite, FileMode.Create))
+                if (foundPhoneNumber != null)
                 {
-                    await personVM.PicturPath.CopyToAsync(stream);
+
+                    //Response.Redirect("/People/Create");
+                    ViewBag.msg = "Phone number already exists";
                 }
-                _context.Add(c);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                else if(foundPhoneNumber == null)
+                {
+                    string imageFileName = null;
+
+                    Person c = new Person();
+                    c.personName = personVM.personName;
+
+                    c.personPhone = personVM.personPhone;
+                    c.dob = personVM.dob;
+                    c.village = personVM.village;
+                    c.countryId = personVM.countryId;
+                    c.divisionId = personVM.divisionId;
+                    c.districtId = personVM.districtId;
+
+                    if (personVM.PicturPath != null)
+                    {
+                        //Image
+                        string webroot = _he.WebRootPath;
+                        string folder = "Images";
+                        imageFileName = Guid.NewGuid() + "_" + Path.GetFileName(personVM.PicturPath.FileName);
+                        string fileToWrite = Path.Combine(webroot, folder, imageFileName);
+                        using (var stream = new FileStream(fileToWrite, FileMode.Create))
+                        {
+                            await personVM.PicturPath.CopyToAsync(stream);
+                        }
+                    }
+
+                    c.personPicture = imageFileName;
+                    c.countryId = personVM.countryId;
+                    _context.Add(c);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                } 
             }
             else
             {
@@ -168,7 +195,6 @@ namespace AddressBook.Controllers
             ViewData["countryId"] = new SelectList(_context.countries, "countryId", "countryName", personVM.countryId);
             ViewData["districtId"] = new SelectList(_context.districts, "districtId", "districtName", personVM.districtId);
             ViewData["divisionId"] = new SelectList(_context.divisions, "divisionId", "divisionName", personVM.divisionId);
-
 
             return View(personVM);
         }
@@ -221,7 +247,7 @@ namespace AddressBook.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("personId,personName,personPhone,PicturPath,dob,village,countryId,divisionId,districtId")] PersonVM personVM)
         {
-            var persons = await _context.persons.FindAsync(id);
+           
             if (id != personVM.personId)
             {
                 return NotFound();
@@ -229,6 +255,9 @@ namespace AddressBook.Controllers
 
             if (ModelState.IsValid)
             {
+
+                var persons = await _context.persons.FindAsync(id);
+                string imageFileName = persons.personPicture;
                 try
                 {
                     if (personVM.PicturPath != null)
@@ -237,11 +266,20 @@ namespace AddressBook.Controllers
 
                         //var path2 = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\Images", persons.personPicture);
                         //System.IO.File.Delete(path2);
-
-                        string webroot = _he.WebRootPath;
-                        string folder = "Images";
-                        string imageFileName = Guid.NewGuid() + "_" + Path.GetFileName(personVM.PicturPath.FileName);
-                        string fileToWrite = Path.Combine(webroot, folder, imageFileName);
+                       
+                        
+                        if (personVM.PicturPath!=null)
+                        {
+                            string webroot = _he.WebRootPath;
+                            string folder = "Images";
+                            imageFileName = Guid.NewGuid() + "_" + Path.GetFileName(personVM.PicturPath.FileName);
+                            string fileToWrite = Path.Combine(webroot, folder, imageFileName);
+                            using (var stream = new FileStream(fileToWrite, FileMode.Create))
+                            {
+                                await personVM.PicturPath.CopyToAsync(stream);
+                            }
+                        }
+                        
 
                         persons.personId = personVM.personId;
                         persons.personName = personVM.personName;
@@ -253,10 +291,7 @@ namespace AddressBook.Controllers
                         persons.districtId = personVM.districtId;
 
 
-                        using (var stream = new FileStream(fileToWrite, FileMode.Create))
-                        {
-                            await personVM.PicturPath.CopyToAsync(stream);
-                        }
+                       
                         _context.Update(persons);
                         await _context.SaveChangesAsync();
                         return RedirectToAction(nameof(Index));
@@ -268,7 +303,7 @@ namespace AddressBook.Controllers
                         persons.personName = personVM.personName;
                         persons.dob = personVM.dob;
                         persons.village = personVM.village;
-                        persons.personPicture = personVM.personPicture;
+                        persons.personPicture = imageFileName;
                         persons.countryId = personVM.countryId;
                         persons.divisionId = personVM.divisionId;
                         persons.districtId = personVM.districtId;
@@ -289,6 +324,7 @@ namespace AddressBook.Controllers
                         throw;
                     }
                 }
+                
             }
             ViewData["countryId"] = new SelectList(_context.countries, "countryId", "countryName", personVM.countryId);
             ViewData["districtId"] = new SelectList(_context.districts, "districtId", "districtName", personVM.districtId);

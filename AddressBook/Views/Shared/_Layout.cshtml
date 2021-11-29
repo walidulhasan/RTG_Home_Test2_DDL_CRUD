@@ -31,7 +31,7 @@
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="mx-5 mx-md-5 mx-sm-5 mx-lg-5">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
@@ -39,7 +39,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2021 - AddressBook - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; @DateTime.Now.Year - AddressBook - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

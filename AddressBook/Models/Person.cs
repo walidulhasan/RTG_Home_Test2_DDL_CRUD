@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -18,7 +19,7 @@ namespace AddressBook.Models
         //[RegularExpression(@"/(^(\+88|0088)?(01){1}[3456789]{1}(\d){8})$/",ErrorMessage ="Phone number Format isn't correct")]
         public string personPhone { get; set; }
         public string personPicture { get; set; }
-
+ 
         [DataType(DataType.Date),Display(Name ="Date of Birth")]
         public DateTime dob { get; set; }
 

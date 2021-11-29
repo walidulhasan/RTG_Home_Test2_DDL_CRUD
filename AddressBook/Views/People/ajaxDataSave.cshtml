@@ -1,0 +1,199 @@
+﻿@model AddressBook.Models.View_Model.PersonVM
+
+
+
+@{
+    ViewData["Title"] = "ajaxDataSave";
+}
+
+
+<div class="row">
+    <div class="col-sm-12 col-md-12">
+        <div class="card card-dark">
+            <div class="card-header m-0 p-1 bg-dark">
+                <h5 class="card-title m-0 text-white">Address Book</h5>
+                <div class="text-right"><a asp-action="Index" asp-controller="People" class="btn btn-xs btn-warning p-0" id="btnBlankAppliation">Back To List</a></div>
+            </div>
+            <form id="AddNewPerson" class="my-2 mx-2" enctype="multipart/form-data" method="post" onsubmit="AjaxPost(this)">
+                <div class="row form-group">
+                   
+                    <div class="col-md-7">
+                        <label class="control-label">Name</label>
+                        <input  class="form-control" id="personName" name="personName" placeholder="Your Name Please">
+                        @*<span id="numberMsg" asp-validation-for="personName" class="text-danger"></span>*@
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="control-label">Picture</label>
+
+                        <input id="PicturPath" name="PicturPath" type="file" class="form-control-file" >
+                        @*<span asp-validation-for="PicturPath" class="text-danger"></span>*@
+                    </div>
+                    <div class="col-md-3">
+                        <img src="~/Images/pp.png" id="imagePreview" class="rounded-circle" width="100" height="80" />
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-7">
+                        <label class="control-label">Phone Numbeer</label>
+                        <input id="personPhone" name="personPhone" type="number" maxlength="15" minlength="11" class="form-control">
+                        @*<span asp-validation-for="personPhone" class="text-danger"></span>*@
+                        <span class="text-danger">@ViewBag.msg</span>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="control-label">Date of Birth</label>
+                        <input id="dob" name="dob"  type="date" class="form-control">
+                        @*<span asp-validation-for="dob" class="text-danger"></span>*@
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label class="control-label">Country</label>
+                        <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#exampleModalCenter">
+                            <i class="fas fa-plus-circle"></i>
+                        </button>
+                        <select id="countryId" name="countryId"  asp-items="ViewBag.Countries" class="form-control">
+                            <option value="">--Country--</option>
+                         
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="control-label">Division</label>
+                        <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#exampleModalCenter">
+                            <i class="fas fa-plus-circle"></i>
+                        </button>
+                     
+                        <select id="divisionId" name="divisionId"  class="form-control">
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label class="control-label">District</label>
+                        <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#exampleModalCenter">
+                            <i class="fas fa-plus-circle"></i>
+                        </button>
+                        @*<select asp-for="districtId" class="form-control" asp-items="ViewBag.districtId"></select>*@
+                        <select id="districtId" name="districtId" class="form-control">
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label  class="control-label"></label>
+                    <input id="village" name="village"  class="form-control" />
+                    <span asp-validation-for="village" class="text-danger"></span>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-12 text-center">
+                        <div class="form-group">
+                            <input type="submit" id="btnSave" value="Create" class="btn btn-sm btn-success" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script type="text/javascript">
+        $('#PicturPath').change(function (event) {
+            var tmppath = URL.createObjectURL(event.target.files[0]);
+            $("#imagePreview").fadeIn("fast").attr('src', URL.createObjectURL(event.target.files[0]));
+        });
+        //$("#btnSave").click(function () {
+        //    var obj = new {
+        //        name: $("#personName").val(),
+        //        picture: $("#PicturPath").val(),
+        //        phone: $("#personPhone").val(),
+        //        dob: $("#dob").val(),
+        //        country: $("#countryId").val(),
+        //        division: $("#divisionId").val(),
+        //        village: $("#village").val()
+        //    }
+
+
+        //    var ajaxConfig = {
+        //        type: "post",
+        //        url: "/People/Create",
+        //        data: new FormData(formData),
+        //        success: function (result) {
+        //            alert(result);
+        //            window.location.href = "People/Index"
+        //        }
+        //    }
+        //    if ($(formData).attr('enctype') == "multipart/form-data") {
+        //        ajaxConfig["contentType"] = false;
+        //        ajaxConfig['processData'] = false;
+        //    }
+        //    $.ajax(ajaxConfig);
+        //    return false;
+        //})
+
+        $("#countryId").change(function () {
+            $("#divisionId").empty();
+            $("#districtId").empty();
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("getDivision")',
+                dataType: 'json',
+                data: { id: $("#countryId").val() },
+                success: function (divisions) {
+                    $("#divisionId").append('<option value="' + -1 + '">' + "Select Division" + '</option>');
+                    $.each(divisions, function (i, division) {
+                        $("#divisionId").append('<option value="' + division.value + '">' + division.text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('faield to retrive Division' + ex)
+                }
+
+            });
+            return false;
+        })
+        $("#divisionId").change(function () {
+
+            $("#districtId").empty();
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("getDistrict")',
+                dataType: 'json',
+                data: { id: $("#divisionId").val() },
+                success: function (divisions) {
+                    $("#districtId").append('<option value="' + -1 + '">' + "Select District" + '</option>');
+                    $.each(divisions, function (i, division) {
+                        $("#districtId").append('<option value="' + division.value + '">' + division.text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('faield to retrive Division' + ex)
+                }
+
+            });
+            return false;
+        })
+        //Form Post using Ajax
+        function AjaxPost(formData) {
+            var ajaxConfig = {
+                type: "post",
+                url: "/People/Create",
+                data: new FormData(formData),
+                success: function (result) {
+                    alert(result);
+                    window.location.href="People/Index"
+                }
+            }
+            if ($(formData).attr('enctype') == "multipart/form-data") {
+                ajaxConfig["contentType"] = false;
+                ajaxConfig['processData'] = false;
+            }
+            $.ajax(ajaxConfig);
+            return false;
+        }
+        
+    </script>
+}
+
+
+

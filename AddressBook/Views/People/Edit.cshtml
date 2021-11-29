@@ -34,8 +34,8 @@
                 <div class="row form-group">
                     <div class="col-md-7">
                         <label asp-for="personPhone" class="control-label"></label>
-                        <input asp-for="personPhone" class="form-control">
-                        <span asp-validation-for="personPhone" class="text-danger"></span>
+                        <input maxlength="11" type="number" asp-for="personPhone" class="form-control">
+                        <span asp-validation-for="personPhone" class="text-danger">@ViewBag.msg</span>
                     </div>
                     <div class="col-md-5">
                         <label asp-for="dob" class="control-label"></label>
@@ -49,21 +49,21 @@
                         <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#exampleModalCenter">
                             <i class="fas fa-plus-circle"></i>
                         </button>
-                        <select asp-for="countryId" class="form-control" asp-items="ViewBag.countryId"></select>
+                        <select id="Country" asp-for="countryId" class="form-control" asp-items="ViewBag.countryId"></select>
                     </div>
                     <div class="form-group col-md-4">
                         <label asp-for="divisionId" class="control-label"></label>
                         <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#exampleModalCenter">
                             <i class="fas fa-plus-circle"></i>
                         </button>
-                        <select asp-for="divisionId" class="form-control" asp-items="ViewBag.divisionId"></select>
+                        <select id="Division" asp-for="divisionId" class="form-control" asp-items="ViewBag.divisionId"></select>
                     </div>
                     <div class="form-group col-md-4">
                         <label asp-for="districtId" class="control-label"></label>
                         <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#exampleModalCenter">
                             <i class="fas fa-plus-circle"></i>
                         </button>
-                        <select asp-for="districtId" class="form-control" asp-items="ViewBag.districtId"></select>
+                        <select id="District" asp-for="districtId" class="form-control" asp-items="ViewBag.districtId"></select>
                     </div>
                 </div>
 
@@ -142,4 +142,118 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+<script type="text/javascript">
+        $('#Imageone').change(function (event) {
+            var tmppath = URL.createObjectURL(event.target.files[0]);
+            $("#imagePreview").fadeIn("fast").attr('src', URL.createObjectURL(event.target.files[0]));
+        });
+
+        $("#Country").change(function () {
+            $("#Division").empty();
+            $("#District").empty();
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("getDivision")',
+                dataType: 'json',
+                data: { id: $("#Country").val() },
+                success: function (divisions) {
+                    $("#Division").append('<option value="' + -1 + '">' + "Select Division" + '</option>');
+                    $.each(divisions, function (i, division) {
+                        $("#Division").append('<option value="' + division.value + '">' + division.text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('faield to retrive Division' + ex)
+                }
+
+            });
+            return false;
+        })
+        $("#Division").change(function () {
+
+            $("#District").empty();
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("getDistrict")',
+                dataType: 'json',
+                data: { id: $("#Division").val() },
+                success: function (divisions) {
+                    $("#District").append('<option value="' + -1 + '">' + "Select District" + '</option>');
+                    $.each(divisions, function (i, division) {
+                        $("#District").append('<option value="' + division.value + '">' + division.text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('faield to retrive Division' + ex)
+                }
+
+            });
+            return false;
+        })
+        //$(function () {
+        //    $("#Country").change(function () {
+        //        $.getJSON("/People/getDivision", { id: $("#Country").val() },)
+        //    }, function (d) {
+        //        var row = "";
+        //        $("#Division").empty();
+        //        $.each(d, function (i, v) {
+        //            row += "<option value=" + v.value + ">"+v.text+"</option>";
+        //        });
+        //        $("#Division").html(row);
+        //    });
+        //    $("#Division").change(function () {
+        //        $.getJSON("/People/getDistrict", { id: $("#Division").val() },)
+        //    }, function (d) {
+        //        var row = "";
+        //        $("#District").empty();
+        //        $.each(d, function (i, v) {
+        //            row += "<option value=" + v.value + ">" + v.text + "</option>";
+        //        });
+        //        $("#District").html(row);
+        //    });
+
+        //});
+
+        //$(document).ready(function () {
+        //    $("#Country").change(function () {
+        //        /*alert("hello friend...");*/
+        //        var id = $("#Country option:selected").val();
+        //        $.ajax({
+        //            url: '/People/getDivision/' + id,
+        //            cache: false,
+        //            type: 'GET',
+        //            dataType: 'JSON',
+        //            success: function (data) {
+        //                console.log(data);
+        //                $("#Division").empty();
+
+        //                $.each(data, function (i, obj) {
+        //                    var s = '<option value="' + obj.divisionId + '">' + obj.divisionName + '</option';
+        //                    console.log(s);
+        //                    $("#Division").append(s);
+        //                })
+        //            }
+        //        })
+        //    })
+        //    $("#Division").change(function () {
+        //        /*alert("hello friend...");*/
+        //        var id = $("#Division option:selected").val();
+        //        $.ajax({
+        //            url: '/People/getDistrict/' + id,
+        //            cache: false,
+        //            type: 'GET',
+        //            dataType: 'JSON',
+        //            success: function (data) {
+        //                console.log(data);
+        //                $("#District").empty();
+        //                $.each(data, function (i, obj) {
+        //                    var s = '<option value="' + obj.districtId + '">' + obj.districtName + '</option';
+        //                    console.log(s);
+        //                    $("#District").append(s);
+        //                })
+        //            }
+        //        })
+        //    })
+        //})
+</script>
 }
